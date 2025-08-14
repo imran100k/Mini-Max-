@@ -3,8 +3,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mini Max — Telegram Mini App</title>
-    <!-- Telegram WebApp SDK (must be in <head>) -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script><style>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Giga.pub SDK -->
+    <script src="https://cdn.giga.pub/sdk.js"></script><style>
   :root {
     --bg: #0b1220;
     --card: #101826;
@@ -38,7 +40,6 @@
   p { margin: 0; color: var(--muted); }
   .chips { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0 18px; }
   .chip { padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); font-size: 13px; }
-
   .row { display: flex; flex-wrap: wrap; gap: 10px; }
   button {
     appearance: none; border: 0; cursor: pointer; font-weight: 700;
@@ -47,7 +48,6 @@
     color: #0b1220; box-shadow: 0 8px 24px rgba(34,211,238,0.25);
   }
   button.secondary { background: rgba(255,255,255,0.06); color: var(--text); box-shadow: none; }
-
   .ad-slot { margin-top: 16px; padding: 16px; border: 1px dashed rgba(255,255,255,0.28); border-radius: 14px; text-align: center; min-height: 120px; }
   .footer { margin-top: 16px; font-size: 12px; color: var(--muted); }
   .warn { color: #fecaca; }
@@ -58,7 +58,7 @@
   <body>
     <div class="card">
       <h1>🚀 Mini Max</h1>
-      <p>Telegram Mini App • GitHub + Vercel ready • Giga.pub ad slot included</p><div class="chips">
+      <p>Telegram Mini App • GitHub + Vercel ready • Giga.pub ads integrated</p><div class="chips">
     <span class="chip" id="chipUser">@user</span>
     <span class="chip" id="chipTheme">theme: —</span>
     <span class="chip" id="chipPlatform">platform: —</span>
@@ -70,26 +70,20 @@
     <button id="btnHaptic" class="secondary">Haptic</button>
     <button id="btnQR" class="secondary">Scan QR</button>
     <button id="btnShare" class="secondary">Share</button>
+    <button id="btnAd" class="secondary">Show Ad</button>
   </div>
 
-  <!-- Giga.pub Banner Area -->
-  <div id="adSlot" class="ad-slot">Ad slot • Place for Giga.pub Banner</div>
+  <div id="adSlot" class="ad-slot">Ad slot • Giga.pub Banner</div>
 
   <div class="footer" id="dbg"></div>
-  <div class="footer">
-    Tip: Open this page via your Telegram bot using a WebApp button. Host on Vercel (HTTPS).
-  </div>
+  <div class="footer">Tip: Open from inside Telegram bot via WebApp button. Host on Vercel (HTTPS).</div>
 </div>
 
-<!-- ========== Giga.pub SDK (uncomment after creating Zone) ========== -->
-<!-- <script src="https://cdn.giga.pub/sdk.js"></script> -->
-
 <script>
-  // Helper: show message when opened outside Telegram
   function ensureTelegramContext() {
     const isTG = !!(window.Telegram && window.Telegram.WebApp);
     if (!isTG) {
-      document.getElementById('dbg').innerHTML = '<span class="warn">⚠️ Open this page from inside Telegram (via your bot). Some features are disabled in browser preview.</span>';
+      document.getElementById('dbg').innerHTML = '<span class="warn">⚠️ Open inside Telegram. Some features disabled.</span>';
     }
     return isTG;
   }
@@ -98,18 +92,12 @@
   if (ensureTelegramContext() && tg) {
     tg.ready();
     tg.expand();
-    try {
-      // chips
-      const u = tg.initDataUnsafe?.user;
-      if (u) {
-        document.getElementById('chipUser').textContent = '@' + (u.username || u.first_name || 'user');
-      }
-      document.getElementById('chipTheme').textContent = 'theme: ' + tg.colorScheme;
-      document.getElementById('chipPlatform').textContent = 'platform: ' + tg.platform;
-      document.getElementById('chipVersion').textContent = 'tg api: ' + (tg.version || '—');
-    } catch (e) {}
+    const u = tg.initDataUnsafe?.user;
+    if (u) document.getElementById('chipUser').textContent = '@' + (u.username || u.first_name || 'user');
+    document.getElementById('chipTheme').textContent = 'theme: ' + tg.colorScheme;
+    document.getElementById('chipPlatform').textContent = 'platform: ' + tg.platform;
+    document.getElementById('chipVersion').textContent = 'tg api: ' + (tg.version || '—');
 
-    // UI actions
     document.getElementById('btnHello').onclick = () => tg.showAlert('Hello from Mini Max!');
     document.getElementById('btnHaptic').onclick = () => tg.HapticFeedback?.impactOccurred('light');
     document.getElementById('btnQR').onclick = () => tg.showScanQrPopup({ text: 'Scan a QR code' }, (text) => tg.showAlert(text || 'No QR data'));
@@ -119,31 +107,24 @@
     };
   }
 
-  // ================== Giga.pub usage examples ==================
-  // After you create a Zone in Giga.pub dashboard, uncomment the SDK above
-  // and set your Zone ID below, then choose a placement method.
+  // Banner ad init
+  try {
+    gigaPub.init('YOUR_ZONE_ID'); // Replace with your actual Zone ID
+    gigaPub.showBanner('#adSlot');
+  } catch (e) {
+    document.getElementById('adSlot').textContent = 'Ad failed to load.';
+  }
 
-  // Example 1: Simple banner render into a container
-  // function initAds() {
-  //   try {
-  //     gigaPub.init('YOUR_ZONE_ID'); // <-- replace with your Zone ID
-  //     gigaPub.showBanner('#adSlot');
-  //   } catch (e) {
-  //     document.getElementById('adSlot').textContent = 'Ad failed to load.';
-  //   }
-  // }
-  // initAds();
-
-  // Example 2: Interstitial (on-demand)
-  // async function showInterstitial() {
-  //   try {
-  //     gigaPub.init('YOUR_ZONE_ID');
-  //     await gigaPub.loadInterstitial();
-  //     gigaPub.showInterstitial();
-  //   } catch (e) { tg?.showAlert('Interstitial failed'); }
-  // }
-  // You can call showInterstitial() on a button/action.
-  // =============================================================
+  // Interstitial ad button
+  document.getElementById('btnAd').onclick = async () => {
+    try {
+      gigaPub.init('YOUR_ZONE_ID');
+      await gigaPub.loadInterstitial();
+      gigaPub.showInterstitial();
+    } catch (e) {
+      tg?.showAlert('Ad failed to load');
+    }
+  };
 </script>
 
   </body>
