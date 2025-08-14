@@ -1,0 +1,150 @@
+<!DOCTYPE html><html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mini Max — Telegram Mini App</title>
+    <!-- Telegram WebApp SDK (must be in <head>) -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script><style>
+  :root {
+    --bg: #0b1220;
+    --card: #101826;
+    --text: #e7e7ea;
+    --muted: #98a2b3;
+    --accent: #22d3ee;
+    --accent-2: #a78bfa;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+    color: var(--text);
+    background: radial-gradient(1200px 800px at 80% -10%, rgba(167,139,250,0.12), transparent),
+                radial-gradient(1000px 600px at -20% 120%, rgba(34,211,238,0.10), transparent),
+                var(--bg);
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+  .card {
+    width: min(820px, 94vw);
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0) 60%), var(--card);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  h1 { margin: 0 0 4px; font-size: 1.6rem; letter-spacing: 0.2px; }
+  p { margin: 0; color: var(--muted); }
+  .chips { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0 18px; }
+  .chip { padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); font-size: 13px; }
+
+  .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  button {
+    appearance: none; border: 0; cursor: pointer; font-weight: 700;
+    border-radius: 14px; padding: 12px 16px; font-size: 14px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    color: #0b1220; box-shadow: 0 8px 24px rgba(34,211,238,0.25);
+  }
+  button.secondary { background: rgba(255,255,255,0.06); color: var(--text); box-shadow: none; }
+
+  .ad-slot { margin-top: 16px; padding: 16px; border: 1px dashed rgba(255,255,255,0.28); border-radius: 14px; text-align: center; min-height: 120px; }
+  .footer { margin-top: 16px; font-size: 12px; color: var(--muted); }
+  .warn { color: #fecaca; }
+  a { color: var(--accent); text-decoration: none; }
+</style>
+
+  </head>
+  <body>
+    <div class="card">
+      <h1>🚀 Mini Max</h1>
+      <p>Telegram Mini App • GitHub + Vercel ready • Giga.pub ad slot included</p><div class="chips">
+    <span class="chip" id="chipUser">@user</span>
+    <span class="chip" id="chipTheme">theme: —</span>
+    <span class="chip" id="chipPlatform">platform: —</span>
+    <span class="chip" id="chipVersion">tg api: —</span>
+  </div>
+
+  <div class="row" style="margin-bottom:12px;">
+    <button id="btnHello">Say Hello</button>
+    <button id="btnHaptic" class="secondary">Haptic</button>
+    <button id="btnQR" class="secondary">Scan QR</button>
+    <button id="btnShare" class="secondary">Share</button>
+  </div>
+
+  <!-- Giga.pub Banner Area -->
+  <div id="adSlot" class="ad-slot">Ad slot • Place for Giga.pub Banner</div>
+
+  <div class="footer" id="dbg"></div>
+  <div class="footer">
+    Tip: Open this page via your Telegram bot using a WebApp button. Host on Vercel (HTTPS).
+  </div>
+</div>
+
+<!-- ========== Giga.pub SDK (uncomment after creating Zone) ========== -->
+<!-- <script src="https://cdn.giga.pub/sdk.js"></script> -->
+
+<script>
+  // Helper: show message when opened outside Telegram
+  function ensureTelegramContext() {
+    const isTG = !!(window.Telegram && window.Telegram.WebApp);
+    if (!isTG) {
+      document.getElementById('dbg').innerHTML = '<span class="warn">⚠️ Open this page from inside Telegram (via your bot). Some features are disabled in browser preview.</span>';
+    }
+    return isTG;
+  }
+
+  const tg = window.Telegram?.WebApp;
+  if (ensureTelegramContext() && tg) {
+    tg.ready();
+    tg.expand();
+    try {
+      // chips
+      const u = tg.initDataUnsafe?.user;
+      if (u) {
+        document.getElementById('chipUser').textContent = '@' + (u.username || u.first_name || 'user');
+      }
+      document.getElementById('chipTheme').textContent = 'theme: ' + tg.colorScheme;
+      document.getElementById('chipPlatform').textContent = 'platform: ' + tg.platform;
+      document.getElementById('chipVersion').textContent = 'tg api: ' + (tg.version || '—');
+    } catch (e) {}
+
+    // UI actions
+    document.getElementById('btnHello').onclick = () => tg.showAlert('Hello from Mini Max!');
+    document.getElementById('btnHaptic').onclick = () => tg.HapticFeedback?.impactOccurred('light');
+    document.getElementById('btnQR').onclick = () => tg.showScanQrPopup({ text: 'Scan a QR code' }, (text) => tg.showAlert(text || 'No QR data'));
+    document.getElementById('btnShare').onclick = async () => {
+      if (tg.shareURL) tg.shareURL(window.location.href);
+      else tg.showPopup({ title: 'Share', message: window.location.href, buttons: [{ type: 'close' }] });
+    };
+  }
+
+  // ================== Giga.pub usage examples ==================
+  // After you create a Zone in Giga.pub dashboard, uncomment the SDK above
+  // and set your Zone ID below, then choose a placement method.
+
+  // Example 1: Simple banner render into a container
+  // function initAds() {
+  //   try {
+  //     gigaPub.init('YOUR_ZONE_ID'); // <-- replace with your Zone ID
+  //     gigaPub.showBanner('#adSlot');
+  //   } catch (e) {
+  //     document.getElementById('adSlot').textContent = 'Ad failed to load.';
+  //   }
+  // }
+  // initAds();
+
+  // Example 2: Interstitial (on-demand)
+  // async function showInterstitial() {
+  //   try {
+  //     gigaPub.init('YOUR_ZONE_ID');
+  //     await gigaPub.loadInterstitial();
+  //     gigaPub.showInterstitial();
+  //   } catch (e) { tg?.showAlert('Interstitial failed'); }
+  // }
+  // You can call showInterstitial() on a button/action.
+  // =============================================================
+</script>
+
+  </body>
+</html>
