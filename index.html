@@ -12,20 +12,21 @@
     --muted: #94a3b8;
     --accent: #38bdf8;
     --accent-2: #a78bfa;
-    --button-hover: #2563eb;
+    --glow: #7f5af0;
   }
   *{box-sizing:border-box;} html,body{height:100%;margin:0;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;color:var(--text);background:linear-gradient(135deg, #0f172a, #1e293b);display:grid;place-items:center;padding:24px;}
-  .card{width:min(800px,95vw);background:var(--card);border-radius:24px;padding:30px;box-shadow:0 15px 40px rgba(0,0,0,0.5);display:flex;flex-direction:column;align-items:center;}
-  h1{margin:0 0 8px;font-size:2rem;letter-spacing:0.5px;text-align:center;}
+  .card{width:min(800px,95vw);background:var(--card);border-radius:24px;padding:30px;box-shadow:0 0 20px rgba(56,189,248,0.5), 0 0 40px rgba(167,139,250,0.3);display:flex;flex-direction:column;align-items:center;transition:0.3s;}
+  .card:hover{box-shadow:0 0 30px rgba(56,189,248,0.8), 0 0 60px rgba(167,139,250,0.6);}
+  h1{margin:0 0 8px;font-size:2rem;letter-spacing:0.5px;text-align:center;text-shadow:0 0 8px var(--accent),0 0 15px var(--accent-2);}
   p{margin:0 0 16px;color:var(--muted);text-align:center;}
   .chips{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0 20px;justify-content:center;}
-  .chip{padding:8px 14px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);font-size:13px;}
+  .chip{padding:8px 14px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);font-size:13px;text-shadow:0 0 5px rgba(56,189,248,0.6);}
   .row{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:20px;}
-  button{appearance:none;border:0;cursor:pointer;font-weight:700;border-radius:16px;padding:14px 20px;font-size:15px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0f172a;transition:all 0.3s ease;box-shadow:0 6px 20px rgba(56,189,248,0.4);}
-  button:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(56,189,248,0.5);}
-  button.secondary{background:rgba(255,255,255,0.08);color:var(--text);box-shadow:0 4px 15px rgba(0,0,0,0.2);}
-  button.secondary:hover{background:rgba(255,255,255,0.12);}
-  .ad-slot{margin-top:20px;padding:16px;border:2px dashed rgba(255,255,255,0.3);border-radius:16px;text-align:center;min-height:130px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:600;}
+  button{appearance:none;border:0;cursor:pointer;font-weight:700;border-radius:16px;padding:14px 20px;font-size:15px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0f172a;transition:all 0.3s ease;box-shadow:0 0 8px var(--accent),0 0 16px var(--accent-2);}
+  button:hover{transform:translateY(-2px);box-shadow:0 0 20px var(--accent),0 0 40px var(--accent-2);}
+  button.secondary{background:rgba(255,255,255,0.08);color:var(--text);box-shadow:0 0 8px rgba(255,255,255,0.3);}
+  button.secondary:hover{background:rgba(255,255,255,0.12);box-shadow:0 0 16px rgba(255,255,255,0.5);}
+  .ad-slot{margin-top:20px;padding:16px;border:2px dashed rgba(255,255,255,0.3);border-radius:16px;text-align:center;min-height:130px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:600;box-shadow:0 0 10px rgba(56,189,248,0.3),0 0 20px rgba(167,139,250,0.2);}
   .footer{margin-top:18px;font-size:13px;color:var(--muted);text-align:center;}
   .warn{color:#f87171;} a{color:var(--accent);text-decoration:none;}
 </style>
@@ -82,7 +83,7 @@
   function showDummyBanner(){
     const adSlot=document.getElementById('adSlot');
     if(adSlot){
-      adSlot.innerHTML='<div style="padding:12px;background:rgba(255,255,255,0.1);border-radius:12px;color:#fff;">🎯 Placeholder ad while review is pending.</div>';
+      adSlot.innerHTML='<div style="padding:12px;background:rgba(255,255,255,0.1);border-radius:12px;color:#fff;box-shadow:0 0 10px var(--accent),0 0 20px var(--accent-2);">🎯 Placeholder ad while review is pending.</div>';
     }
   }
   setTimeout(()=>{if(document.getElementById('adSlot') && document.getElementById('adSlot').children.length===0) showDummyBanner();},2000);
