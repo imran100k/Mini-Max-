@@ -5,8 +5,8 @@
     <title>Mini Max — Telegram Mini App</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Giga.pub SDK -->
-    <script src="https://cdn.giga.pub/sdk.js"></script><style>
+    <!-- Giga.pub Auto Ad Script -->
+    <script src="https://ad.gigapub.tech/script?id=1693"></script><style>
   :root {
     --bg: #0b1220;
     --card: #101826;
@@ -70,10 +70,10 @@
     <button id="btnHaptic" class="secondary">Haptic</button>
     <button id="btnQR" class="secondary">Scan QR</button>
     <button id="btnShare" class="secondary">Share</button>
-    <button id="btnAd" class="secondary">Show Ad</button>
+    <button id="btnAd" class="secondary">Show Interstitial Ad</button>
   </div>
 
-  <div id="adSlot" class="ad-slot">Ad slot • Giga.pub Banner</div>
+  <div id="adSlot" class="ad-slot">Banner Ad will load automatically.</div>
 
   <div class="footer" id="dbg"></div>
   <div class="footer">Tip: Open from inside Telegram bot via WebApp button. Host on Vercel (HTTPS).</div>
@@ -107,20 +107,16 @@
     };
   }
 
-  // Banner ad init
-  try {
-    gigaPub.init('YOUR_ZONE_ID'); // Replace with your actual Zone ID
-    gigaPub.showBanner('#adSlot');
-  } catch (e) {
-    document.getElementById('adSlot').textContent = 'Ad failed to load.';
-  }
-
   // Interstitial ad button
   document.getElementById('btnAd').onclick = async () => {
     try {
-      gigaPub.init('YOUR_ZONE_ID');
-      await gigaPub.loadInterstitial();
-      gigaPub.showInterstitial();
+      // Using Giga.pub SDK for on-demand Interstitial
+      if (window.gigaPub) {
+        await gigaPub.loadInterstitial();
+        gigaPub.showInterstitial();
+      } else {
+        tg?.showAlert('Ad script not loaded yet');
+      }
     } catch (e) {
       tg?.showAlert('Ad failed to load');
     }
